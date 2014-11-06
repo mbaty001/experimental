@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+            <title>#{gui.version} - add new</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:panel id="general">
+                <center>
+                    <p:commandLink id="new" action="#{simpleLogin.checkValidUser}" update=":admin:messages">
+                        <h:outputText value="ADD NEW"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_new.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="update" action="#{simpleLogin.CheckValidUser}" update=":admin:messages">
+                        <h:outputText value="UPDATE"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_update.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="view" action="#{simpleLogin.CheckValidUser}" update=":admin:messages"> 
+                        <h:outputText value="VIEW"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="index.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="stats" action="#{simpleLogin.CheckValidUser}">
+                        <h:outputText value="STATS"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="stats.xhtml" />
+                    </p:commandLink>                    
+                </center>
+            </p:panel>
+        </h:form>
+            
+        <h:form id="admin">  
+            <p:growl id="messages" showDetail="true"/> 
+            
+            <!-- YEAR AND MONTH -->
+            <p:panel header="Choose salary year/month:" style="alialignment-adjust: central">
+            
+                <h:panelGrid columns="5">                
+                    <h:selectOneMenu value="#{gui.newYear}">
+                        <f:selectItems value="#{gui.years_for_new}"/>
+                    </h:selectOneMenu>
+                    /
+                    <h:selectOneMenu value="#{gui.newMonth}">
+                        <f:selectItems value="#{gui.months_for_new}"/>
+                    </h:selectOneMenu>
+                    <p:commandButton value="Next" update=":admin:users,data,overall,:admin:messages" actionListener="#{gui.validateMY}" styleClass="ui-priority-primary" icon="ui-icon-star"/>
+                </h:panelGrid>
+            </p:panel>
+            
+            <!-- USER -->
+            <p:panel id="users" header="Choose employee:" >
+                <h:selectOneMenu  value="#{gui.newUser}" rendered="#{gui.validatedMY}" >
+                    <f:selectItems value="#{gui.userNames}" /> 
+                </h:selectOneMenu>
+                <h:outputText value=" " rendered="#{gui.validatedMY}" />
+                    <p:commandButton value="Next" update="data,overall" actionListener="#{gui.validateUser}" styleClass="ui-priority-primary" icon="ui-icon-star" rendered="#{gui.validatedMY}"/>
+            </p:panel>
+                <!-- DATA -->
+            <p:panel id="data" header="Choose data">
+                <h:panelGrid columns="13" rendered="#{gui.validatedMYU}">
+                    Year:
+                    <h:selectOneMenu value="#{gui.newUYear}">
+                        <f:selectItems value="#{gui.years_for_new}"/>
+                    </h:selectOneMenu>
+                    Month:
+                    <h:selectOneMenu value="#{gui.newUMonth}">
+                        <f:selectItems value="#{gui.months_for_new}"/>
+                    </h:selectOneMenu>
+                    Day:
+                    <h:selectOneMenu value="#{gui.newUDay}">
+                        <f:selectItems value="#{gui.days_for_new}"/>
+                    </h:selectOneMenu>
+                    Hour:
+                    <h:selectOneMenu value="#{gui.newUHour}">
+                        <f:selectItems value="#{gui.hours}"/>
+                    </h:selectOneMenu>
+                    Minute:
+                    <h:selectOneMenu value="#{gui.newUMinute}">
+                        <f:selectItems value="#{gui.minutes}"/>
+                    </h:selectOneMenu>  
+                    <p:commandButton value="Next" update="overall" actionListener="#{gui.validateData}" styleClass="ui-priority-primary" icon="ui-icon-star" rendered="#{gui.validatedMYU}"/>
+                </h:panelGrid>
+            </p:panel>
+                
+            <!-- DISPLAY COLLECTED DATA -->
+            <p:panel id="overall" header="Collected data:">
+                <h:panelGrid columns="3" cellpadding="5">
+                    <h:outputText value="Year : " rendered="#{gui.validatedMY}" />
+                    <h:outputText value="#{gui.newYear}" style="color : blue" rendered="#{gui.validatedMY}" />
+                    <br/>
+                    <h:outputText value="Month : " rendered="#{gui.validatedMY}" />
+                    <h:outputText value="#{gui.newMonth}" style="color : blue" rendered="#{gui.validatedMY}" />
+                    <br/>
+                    <h:outputText value="User : " rendered="#{gui.validatedMYU}" />
+                    <h:outputText value="#{gui.newUser}" style="color : blue" rendered="#{gui.validatedMYU}" />
+                    <br/>
+                    <h:outputText value="User year : " rendered="#{gui.validatedData}" />
+                    <h:outputText value="#{gui.newUYear}" style="color : blue" rendered="#{gui.validatedData}" />
+                    <br/>
+                    <h:outputText value="User month : " rendered="#{gui.validatedData}" />
+                    <h:outputText value="#{gui.newUMonth}" style="color : blue" rendered="#{gui.validatedData}" />
+                    <br/>
+                    <h:outputText value="User day : " rendered="#{gui.validatedData}" />
+                    <h:outputText value="#{gui.newUDay}" style="color : blue" rendered="#{gui.validatedData}" />
+                    <br/>
+                    <h:outputText value="User hour : " rendered="#{gui.validatedData}" />
+                    <h:outputText value="#{gui.newUHour}" style="color : blue" rendered="#{gui.validatedData}" />
+                    <br/>
+                    <h:outputText value="User minute : " rendered="#{gui.validatedData}" />
+                    <h:outputText value="#{gui.newUMinute}" style="color : blue" rendered="#{gui.validatedData}" />
+                    <br/>
+                    <p:commandButton value="Save" icon="ui-icon-disk" action="#{gui.SaveData}" rendered="#{gui.validatedData}" update=":admin:messages"/>
+                </h:panelGrid>
+                    
+            </p:panel>
+            
+        </h:form>
+    </h:body>
+</html>

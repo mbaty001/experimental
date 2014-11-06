@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>#{gui.version} - update</title>
+    </h:head>
+    <h:body>                  
+        <p:panel id="general">
+            <center>
+                <p:commandLink id="new" action="#{simpleLogin.CheckValidUser}" update=":admin:messages">
+                    <h:outputText value="ADD NEW"/>
+                    <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_new.xhtml" />
+                </p:commandLink>
+                |
+                <p:commandLink id="update" action="#{simpleLogin.CheckValidUser}" update=":admin:messages">
+                    <h:outputText value="UPDATE"/>
+                    <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_update.xhtml" />
+                </p:commandLink>
+                |
+                <p:commandLink id="view" action="#{simpleLogin.CheckValidUser}" update=":admin:messages">
+                    <h:outputText value="VIEW"/>
+                    <f:setPropertyActionListener target="#{simpleLogin.next}" value="index.xhtml" />
+                </p:commandLink>
+                |
+                <p:commandLink id="stats" action="#{simpleLogin.CheckValidUser}">
+                    <h:outputText value="STATS"/>
+                    <f:setPropertyActionListener target="#{simpleLogin.next}" value="stats.xhtml" />
+                </p:commandLink>                
+            </center>
+        </p:panel>
+            
+        <h:form id="admin">
+            <p:growl id="messages" showDetail="true"/>            
+            
+            <p:contextMenu for="cs" widgetVar="cMenu">
+                <p:menuitem value="Edit Cell" icon="ui-icon-search" onclick="cashTable.showCellEditor(); return false;"/>
+                <p:menuitem value="Hide Menu" icon="ui-icon-close" onclick="cMenu.hide()"/>
+            </p:contextMenu>
+            
+            <p:dataTable id="cs" var="c" value="#{gui.kasa}" editable="true" editMode="cell" widgetVar="cashTable" >
+                <f:facet name="header">
+                    Cash admin - in-cell editing
+                </f:facet>
+                
+                <p:ajax event="cellEdit" listener="#{gui.onCellEdit}" update=":admin:messages"/> 
+                
+                <p:column headerText="year">
+                        <h:outputText value="#{c.cashPK.year}"/>
+                </p:column>
+                
+                <p:column headerText="month">
+                        <h:outputText value="#{c.cashPK.month}"/>
+                </p:column>
+                <p:column headerText="name1">
+                    <h:outputText value="#{c.user2.name}"/>
+                </p:column>
+                <p:column headerText="u1year">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u1year}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u1year}">
+                                <f:selectItems value="#{gui.years}" var="u1year" itemLabel="#{year}" itemValue="#{year}"/>
+                            </h:selectOneMenu>                                
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="u1month">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u1month}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u1month}">
+                                <f:selectItems value="#{gui.months}" var="u1month" itemLabel="#{month}" itemValue="#{month}"/>
+                            </h:selectOneMenu>                                                         
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="u1day">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u1day}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u1day}">
+                                <f:selectItems value="#{gui.days}" var="u1day" itemLabel="#{day}" itemValue="#{day}"/>
+                            </h:selectOneMenu>                                                         
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="u1hour">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u1hour}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u1hour}">
+                                <f:selectItems value="#{gui.hours}" var="u1hour" itemLabel="#{hour}" itemValue="#{hour}"/>
+                            </h:selectOneMenu>                                                         
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="u1minute">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u1minute}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u1minute}">
+                                <f:selectItems value="#{gui.minutes}" var="u1minute" itemLabel="#{minute}" itemValue="#{minute}"/>
+                            </h:selectOneMenu>                                                         
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>                
+                
+                <p:column headerText="name2">
+                    <h:outputText value="#{c.user1.name}"/>
+                </p:column>                
+                <p:column headerText="u2year">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u2year}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u2year}">
+                                <f:selectItems value="#{gui.years}" var="u2year" itemLabel="#{year}" itemValue="#{year}"/>
+                            </h:selectOneMenu>                                
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="u2month">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u2month}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u2month}">
+                                <f:selectItems value="#{gui.months}" var="u2month" itemLabel="#{month}" itemValue="#{month}"/>
+                            </h:selectOneMenu>                                                         
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="u2day">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u2day}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u2day}">
+                                <f:selectItems value="#{gui.days}" var="u2day" itemLabel="#{day}" itemValue="#{day}"/>
+                            </h:selectOneMenu>                                                         
+                        </f:facet>
+
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="u2hour">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u2hour}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u2hour}">
+                                <f:selectItems value="#{gui.hours}" var="u2hour" itemLabel="#{hour}" itemValue="#{hour}"/>
+                            </h:selectOneMenu>                                                         
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="u2minute">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{c.u2minute}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{c.u2minute}">
+                                <f:selectItems value="#{gui.minutes}" var="u2minute" itemLabel="#{minute}" itemValue="#{minute}"/>
+                            </h:selectOneMenu>                                                         
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>                                
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

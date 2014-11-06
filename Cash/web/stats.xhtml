@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>#{gui.version} - statistics</title>
+    </h:head> 
+    <h:body>
+        <h:form>
+            <p:panel>
+                <center>
+                    <p:commandLink id="new" action="#{simpleLogin.CheckValidUser}" update=":stats:messages">
+                        <h:outputText value="ADD NEW"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_new.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="update" action="#{simpleLogin.CheckValidUser}" update=":stats:messages">
+                        <h:outputText value="UPDATE"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_update.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="view" action="#{simpleLogin.CheckValidUser}" update=":stats:messages">
+                        <h:outputText value="VIEW"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="index.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="stats" action="#{simpleLogin.CheckValidUser}" update=":stats:messages">
+                        <h:outputText value="STATS"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="stats.xhtml" />
+                    </p:commandLink>                    
+                </center>
+            </p:panel>
+        </h:form>
+        <h:form>
+            <p:panel>
+                <center>        
+                    <p:selectOneRadio id="options" value="#{gui.stats}" >
+                        <f:selectItem itemLabel="Competition stats" itemValue="cCompet" />  
+                        <f:selectItem itemLabel="Day stats" itemValue="cDate" />  
+                        <f:selectItem itemLabel="Time stats" itemValue="cTime" />
+                        <f:selectItem itemLabel="Overall stats" itemValue="cOverall" />
+                        <p:ajax update=":stats:messages, :stats:charts"  listener="#{gui.procesStats}" />
+                    </p:selectOneRadio> 
+                </center>
+            </p:panel>
+        </h:form>
+        <h:form id="stats">            
+            <p:growl id="messages" showDetail="true"/> 
+            <p:panel id="charts">
+                <p:barChart value="#{gui.cStatsModel}" legendPosition="ne"  
+                            title="Competition statistics" min="0" max="100" style="height:300px" rendered="#{gui.cStatsRender}"/>             
+
+                <p:barChart value="#{gui.dStatsModel}" legendPosition="ne"  
+                            title="Day of month statistics" min="0" max="50" style="height:300px" rendered="#{gui.dStatsRender}"/>
+
+                <p:lineChart value="#{gui.tStatsModel}" legendPosition="e" animate="" 
+                             title="Time of day statistics" minY="0" maxY="60" style="height:300px" rendered="#{gui.tStatsRender}"/>             
+                
+                <p:barChart value="#{gui.cOverallModel}" legendPosition="ne"  
+                            title="Overall statistics" min="0" max="100" style="height:300px" rendered="#{gui.cOverallRender}"/>    
+                <h:outputText value="Assuming 11.2kPLN salary, 3% bank account interest. The current leader earned: #{gui.cashAdvantage} PLN (just by having the cash faster)"
+                              rendered="#{gui.cOverallRender}"/>
+                
+            </p:panel>
+        </h:form>
+        
+    </h:body>
+</html>

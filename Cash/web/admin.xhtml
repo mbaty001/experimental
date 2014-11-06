@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>#{gui.version} - admin</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:panel id="generalAdmin">
+                <center>
+                    <p:commandLink id="new" action="#{simpleLogin.CheckValidUser}" update=":admin:messages">
+                        <h:outputText value="ADD NEW"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_new.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="update" action="#{simpleLogin.CheckValidUser}" update=":admin:messages">
+                        <h:outputText value="UPDATE"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_update.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="view" action="#{simpleLogin.CheckValidUser}" update=":admin:messages">
+                        <h:outputText value="VIEW"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="index.xhtml" />
+                    </p:commandLink>
+                    |
+                    <p:commandLink id="stats" action="#{simpleLogin.CheckValidUser}">
+                        <h:outputText value="STATS"/>
+                        <f:setPropertyActionListener target="#{simpleLogin.next}" value="stats.xhtml" />
+                    </p:commandLink>                    
+                </center>
+            </p:panel>
+        </h:form>
+        
+       
+        <h:form id="admin">
+            <p:growl id="messages" showDetail="true"/> 
+            
+            <p:panel header="Admin login page">
+                <h:panelGrid columns="2" cellpadding="5">
+                    <h:outputText value="Enter Login ID: *"/>
+                    <p:inputText id="loginname" value="#{simpleLogin.loginname}" required="true"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+                    <h:outputText value="Enter Password: *"/>
+                    <p:password id="password" value="#{simpleLogin.password}" required="true"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2">                    
+                    <p:commandButton value="Login" update=":admin:messages" action="#{simpleLogin.CheckValidUser}"/>
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>

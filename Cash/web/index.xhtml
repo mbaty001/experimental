@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>#{gui.version}</title>
+    </h:head>
+    <h:body>
+        
+        <p:panel id="general">
+            <center>
+                <p:commandLink id="new" action="#{simpleLogin.CheckValidUser}">
+                    <h:outputText value="ADD NEW"/>
+                    <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_new.xhtml" />
+                </p:commandLink>
+                |
+                <p:commandLink id="update" action="#{simpleLogin.CheckValidUser}">
+                    <h:outputText value="UPDATE"/>
+                    <f:setPropertyActionListener target="#{simpleLogin.next}" value="admin_ok_update.xhtml" />
+                </p:commandLink>
+                |
+                <p:commandLink id="view" action="#{simpleLogin.CheckValidUser}">
+                    <h:outputText value="VIEW"/>
+                    <f:setPropertyActionListener target="#{simpleLogin.next}" value="index.xhtml" />
+                </p:commandLink>
+                |
+                <p:commandLink id="stats" action="#{simpleLogin.CheckValidUser}">
+                    <h:outputText value="STATS"/>
+                    <f:setPropertyActionListener target="#{simpleLogin.next}" value="stats.xhtml" />
+                </p:commandLink>
+            </center>
+        </p:panel>
+        
+        <h:form id="cashForm">
+            <p:dataTable var="e" value="#{gui.kuku}" paginator="true" rows="20">
+                <f:facet name="header">
+                    #{gui.version}
+                </f:facet>
+                <p:column sortBy="#{e.u1value}">
+                    <f:facet name="header">
+                        <h:outputText value="Przemek" />
+                    </f:facet>
+                    <h:outputText value="#{e.u1value}" style="#{e.record eq 'true' ? 'color: #6639B7' : ''}" />
+                </p:column>
+                <p:column sortBy="#{e.u2value}">
+                    <f:facet name="header">
+                        <h:outputText value="Michal" />
+                    </f:facet>
+                    <h:outputText value="#{e.u2value}" style="#{e.record eq 'true' ? 'color: #6639B7' : '' }"/>
+                </p:column>                
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>
+
