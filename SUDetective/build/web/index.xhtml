@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    
+    <h:head>
+        <title>SU Detective v0.3</title>
+    </h:head>
+    <h:body>
+        <h:outputStylesheet library="css" name="main.css"/>
+        <center><h1>SU Detective v0.3</h1>by mbaty001</center>
+        <h:form id="suForm" target="_blank" >
+            <p:growl id="growl" showDetail="true"/>  
+            
+            <p:dataTable var="su" value="#{gui.sus}" paginator="true" rows="20" 
+                         rowStyleClass="#{su.suErrors eq 0 ? null: 'notok'}">
+                         
+                
+                <p:ajax event="rowToggle" listener="#{gui.onRowToggle}" update=":suForm:growl" />
+                 
+                <f:facet name="header">
+                    List of SUs
+                </f:facet>
+                <p:column sortBy="#{su.idSU}">
+                    <f:facet name="header">
+                        <h:outputText value="ID " />
+                    </f:facet>
+                    <h:outputText value="#{su.idSU}" />
+                </p:column>
+                <p:column sortBy="#{su.suFrom}" filterBy="#{su.suFrom}" filterOptions="#{gui.suFromOptions}" filterMatchMode="exact">
+                    <f:facet name="header">
+                        <h:outputText value="SU FROM" />
+                    </f:facet>
+                    <h:outputText value="#{su.suFrom}" />
+                </p:column>
+                <p:column sortBy="#{su.suTo}" filterBy="#{su.suTo}" filterOptions="#{gui.suToOptions}" filterMatchMode="exact">
+                    <f:facet name="header">
+                        <h:outputText value="SU TO" />
+                    </f:facet>
+                    <h:outputText value="#{su.suTo}" />
+                </p:column>
+                <p:column sortBy="${su.SUTYPEidSUTYPE}" filterBy="${su.SUTYPEidSUTYPE.name}" filterOptions="#{gui.suTypeOptions}" filterMatchMode="exact" >
+                    <f:facet name="header">
+                        <h:outputText value="SU TYPE" />
+                    </f:facet>
+                    <h:outputText value="#{su.SUTYPEidSUTYPE.name}" />
+                </p:column>
+                <p:column sortBy="#{su.suStartTime}">
+                    <f:facet name="header">
+                        <h:outputText value="SU START TIME" />
+                    </f:facet>
+                    <h:outputText value="#{su.suStartTime}" />
+                </p:column>
+                <p:column sortBy="#{su.suEndTime}">
+                    <f:facet name="header">
+                        <h:outputText value="SU END TIME" />
+                    </f:facet>
+                    <h:outputText value="#{su.suEndTime}" />
+                </p:column>                
+                <p:column sortBy="#{su.SUSTATEidSUSTATE}" filterBy="#{su.SUSTATEidSUSTATE.name}" filterOptions="#{gui.suStateOptions}" filterMatchMode="exact">
+                    <f:facet name="header">
+                        <h:outputText value="SU STATE" />
+                    </f:facet>
+                    <h:outputText value="#{su.SUSTATEidSUSTATE.name}" />
+                </p:column>                
+                <p:column sortBy="#{su.LABidLAB}" filterBy="#{su.LABidLAB.name}" filterOptions="#{gui.labOptions}" filterMatchMode="exact">
+                    <f:facet name="header">
+                        <h:outputText value="LAB" />
+                      </f:facet>
+                    <h:outputText value="#{su.LABidLAB.name}" />
+                </p:column>                
+                <p:column sortBy="#{su.suErrors}">
+                    <f:facet name="header">
+                        <h:outputText value="#ERR" />
+                    </f:facet>
+                    <h:outputText value="#{su.suErrors}" />
+                </p:column>                
+                
+                <p:column style="width:2%">  
+                    <p:rowToggler />  
+                </p:column>  
+
+                <p:rowExpansion >  
+                    <table>
+                        <th>Lab details</th>
+                                <tr>
+                                    <td align="right"><h:outputText value="Lab : "/></td>
+                                    <td style="font-weight: bold"><h:outputText value="#{su.LABidLAB.name}"/></td>
+                                    <td align="right"><h:outputText value="Langs : "/></td>
+                                    <td style="font-weight: bold"><h:outputText value="#{su.LABidLAB.noOfLangs}"/></td>
+                                    <td align="right"><h:outputText value="HAP : "/></td>
+                                    <td style="font-weight: bold"><h:outputText value="#{su.LABidLAB.hap}"/></td>
+                                    <td align="right"><h:outputText value="RMS : "/></td>
+                                    <td style="font-weight: bold"><h:outputText value="#{su.LABidLAB.rms}"/></td>
+                                    <td align="right"><h:outputText value="DIP : "/></td>
+                                    <td style="font-weight: bold"><h:outputText value="#{su.LABidLAB.dualIp}"/></td>
+                                    <td align="right"><h:outputText value="ACS : "/></td>
+                                    <td style="font-weight: bold"><h:outputText value="#{su.LABidLAB.ACSTYPEidHWTYPE.name}"/></td>
+                                    <td align="right"><h:outputText value="IP cfg : "/></td>
+                                    <td style="font-weight: bold"><h:outputText value="#{su.LABidLAB.IPTYPEidIPTYPE.name}"/></td>
+                                </tr>                                                
+                    </table> 
+                            <p:dataTable var="log" value="#{su.suLogList}" rowStyleClass="#{log.logErrors eq 0 ? null: 'notok'}">  
+                                <f:facet name="header">
+                                    <h:outputText value="Extract from SU Logs" />
+                                </f:facet>
+                                <p:column >
+                                    <f:facet name="header">
+                                    <h:outputText value="Node" />
+                                    </f:facet>
+                                    <h:outputText value="#{log.nodeName}" />
+                                </p:column>
+                                
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="# of errors"/>                                        
+                                    </f:facet>
+                                    <h:outputText value="#{log.logErrors}" />
+                                </p:column>
+                                                               
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="SU timeline" />
+                                    </f:facet>
+                                    <!--<c:if test="#{fn:length(log.logFile) > 20}">-->
+                                        <h:commandLink  action="#{gui.timelineChoose}" value="Timeline" rendered="#{fn:length(log.logFile) > 20}">
+                                            <f:setPropertyActionListener target="#{gui.timeline}" value="#{log.logFile}"/>
+                                            <f:setPropertyActionListener target="#{gui.node}" value="#{log.nodeName}"/>
+                                        </h:commandLink>  
+                                    <h:outputText value="No data" rendered="#{fn:length(log.logFile) lt 20}"/>
+<!--                                    </c:if>
+                                    <c:if test="#{fn:length(log.logFile) < 20}">
+                                        No data
+                                    </c:if>-->
+                                        
+                                </p:column>                                
+                             </p:dataTable> 
+                </p:rowExpansion> 
+                
+                <f:facet name="footer">
+                    Database has #{fn:length(gui.sus)} SU data collected.
+                </f:facet>
+                    
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>
+

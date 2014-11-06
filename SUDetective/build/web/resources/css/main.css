@@ -1,0 +1,16 @@
+/* 
+    Document   : main
+    Created on : Mar 22, 2013, 1:59:29 PM
+    Author     : mbaty001
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+.notok{
+    background-color: red;
+}
+
