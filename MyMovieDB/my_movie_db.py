@@ -9,19 +9,20 @@ http://docs.python-requests.org/en/latest/user/quickstart/
 import json
 import requests
 
+def print_json(what):        
+    print json.dumps(what, sort_keys=True, indent=4, separators=(',', ':'))
+
 class MovieDB(object):
     def __init__(self):
         self.api_key = '580c2a10f40a0b812aab4679b004d413'
-        self.url = 'http://api.themoviedb.org'
+        self.url = 'http://api.themoviedb.org/3'
+        self.args = {'api_key' : self.api_key}
+        self.popular = Request(self.url + '/movie/popular', self.args).get()['results'] or None
         
-    def get_configuration(self):        
-        url = self.url + '/3/configuration'
-        args = {'api_key' : self.api_key}
-        return Request(url, args).get()
-    
-    def print_configuration(self):
-        config = self.get_configuration()
-        print json.dumps(config, sort_keys=True, indent=4, separators=(',', ':'))
+    def get_movie(self, id):      
+        print_json(Request(self.url + '/movie/%s' %id, self.args).get())
+        "https://image.tmdb.org/t/p/w130/<poster_path>"
+        
 
 class Request(object):
     def __init__(self, url, params):
@@ -35,5 +36,8 @@ class Request(object):
 if __name__ == '__main__':
         
     db = MovieDB()
-    db.print_configuration()
+    for movie in db.popular:
+        db.get_movie(movie['id'])
+        print 30*'*' 
+
     
