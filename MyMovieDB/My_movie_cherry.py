@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import cherrypy
 import My_movie_db
 
@@ -7,7 +8,8 @@ import My_movie_db
 _header = '''
 	<html>
 		<head>
-			<title>My movie db</title>			
+			<title>My movie db</title>
+			 <link href="/static/css/style.css" rel="stylesheet">	
 		</head>
 		<body>
 			<center><h3>My movie db</h3></center>
@@ -38,5 +40,17 @@ class MyMovieDB(object):
 		return self.page
 	index.exposed = True
 	
-cherrypy.config.update({'server.socket_port' : 8081})
-cherrypy.quickstart(MyMovieDB())
+if __name__ == '__main__':
+	
+	conf = {
+		'/' : {
+			'tools.staticdir.root' : os.path.abspath(os.getcwd())
+			},
+		'/static' : {
+			'tools.staticdir.on' : True,
+			'tools.staticdir.dir' : '.\\static'
+			}
+		}
+	
+	cherrypy.config.update({'server.socket_port' : 8081})
+	cherrypy.quickstart(MyMovieDB(), '/', conf)
