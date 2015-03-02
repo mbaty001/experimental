@@ -8,13 +8,14 @@ import My_movie_db
 _header = '''
 	<html>
 		<head>
-			<title>My movie db</title>
+			<title>THE MOST POPULAR RECENT MOVIES</title>
 			 <link href="/static/css/style.css" rel="stylesheet">	
 		</head>
 		<body>
-			<center><h3>My movie db</h3></center>
+			<center><h3>THE MOST POPULAR RECENT MOVIES</h3></center>
 			<div class="container">
-			<table>'''			
+			<table>
+			<tr><th>POPULARITY</th><th>VOTE</th><th>TITLE</th><th>PRODUCTION</th><th>GENRE</th><th>POSTER</th><th>OVERVIEW</th></tr>'''			
 
 _footer = '''
 			</table border="1">
@@ -24,7 +25,13 @@ _footer = '''
 
 _data_view = '''
 	<tr>
-		<td>%(title)s</td>
+		<td>%(popularity)s</td>
+		<td>%(vote_average)s</td>
+		<td><b>%(title)s</b></td>
+		<td>%(production_countries)s</td>
+		<td>%(genres)s</td>		
+		<td><img src="https://image.tmdb.org/t/p/w130/%(poster_path)s" alt="%(title)s" height="130" width="100"/></td>
+		<td>%(overview)s</td>
 	</tr>'''
 		
 class MyMovieDB(object):
@@ -32,6 +39,7 @@ class MyMovieDB(object):
 	def __init__(self):
 		self.db = My_movie_db.MovieDB()
 		self.page = list()
+		print self.db.populars
 		
 	def index(self):
 		self.page = [_header]

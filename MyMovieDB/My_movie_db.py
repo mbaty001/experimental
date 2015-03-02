@@ -19,21 +19,23 @@ class MovieDB(object):
         self.url = 'http://api.themoviedb.org/3'
         self.args = {'api_key' : self.api_key}
         self.populars = Request(self.url + '/movie/popular', self.args).get()['results'] or None
-        self.sorted_populars_by_vote_average()
+        self.populars = map(lambda x: self.get_movie(x['id']), self.populars)
+        self.sorted_populars_by('popularity')
         
-    def sorted_populars_by_vote_average(self):
+    def sorted_populars_by(self, what):
         self.populars = sorted(self.populars, 
-                               key=operator.itemgetter('vote_average'),
+                               key=operator.itemgetter(what),
                                reverse = True)    
             
     def get_movie(self, id):      
         dataDict = Request(self.url + '/movie/%s' %id, self.args).get()        
         return {'title' : dataDict['title'], 
                'vote_average' : dataDict['vote_average'], 
-               'production_countries' : dataDict['production_countries'], 
+               'production_countries' : ', '.join(map(lambda x: x['name'], dataDict['production_countries'])), 
                'poster_path' : 'https://image.tmdb.org/t/p/w130/' + dataDict['poster_path'],
                'overview' : dataDict['overview'], 
-               'genres' : dataDict['genres']}
+               'genres' : ', '.join(map(lambda x: x['name'], dataDict['genres'])),
+               'popularity' : round(dataDict['popularity'], 2)}
         "https://image.tmdb.org/t/p/w130/<poster_path>"
         
 
