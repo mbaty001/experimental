@@ -39,14 +39,13 @@ class MyMovieDB(object):
 	def __init__(self):
 		self.db = My_movie_db.MovieDB()
 		self.page = list()
-		print self.db.populars
 		
+	@cherrypy.expose
 	def index(self):
 		self.page = [_header]
 		map(lambda x: self.page.append(_data_view %(x)), self.db.populars)
 		self.page.append(_footer)
 		return self.page
-	index.exposed = True
 	
 if __name__ == '__main__':
 	

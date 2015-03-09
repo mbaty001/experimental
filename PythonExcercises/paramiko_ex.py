@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-import piramiko
+import paramiko
 
-ssh = piramiko.client.SSHClient()
+ssh = paramiko.client.SSHClient()
 
 ''' 
 The default policy is to reject all unknown servers - i.e. RejectPolicy is used
