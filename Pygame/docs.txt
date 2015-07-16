@@ -1,0 +1,5 @@
+1. http://inventwithpython.com/pygame/chapter2.html
+2. The “Invent with Python” book also has a few chapters covering Pygame. You can read them online at 
+	http://invpy.com/chap17.
+3. http://pygame.org/docs.
+
