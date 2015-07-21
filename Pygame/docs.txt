@@ -3,3 +3,8 @@
 	http://invpy.com/chap17.
 3. http://pygame.org/docs.
 
+4. Sprite http://www.pygame.org/docs/tut/SpriteIntro.html
+
+Make a two maps: 
+ 1 solid colors for click determination (hiden from player)
+ 2 modern looking for player wow effect

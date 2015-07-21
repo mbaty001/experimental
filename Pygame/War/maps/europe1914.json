@@ -1,0 +1,26 @@
+{ 
+	"countries" : [
+		{ 
+			"country" : "PORTUGAL", 	
+			"color" : "(0, 255, 0, 255)", 
+			"neighbors" : "SPAIN",
+			"income" : "2",
+			"atack" : "1",
+			"defense" : "5",
+			"experience" : "1",
+			"modernity" : "1",
+			"number" : "10"
+		},	
+		{ 
+			"country" : "SPAIN", 
+			"color" : "(253, 255, 0, 255)", 
+			"neighbors" : "PORTUGAL",
+			"income" : "6",
+			"atack" : "1",
+			"defense" : "5",
+			"experience" : "1",
+			"modernity" : "1", 
+			"number" : "30"
+		}
+	]
+}
