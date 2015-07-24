@@ -1,26 +1,59 @@
 { 
 	"countries" : [
 		{ 
-			"country" : "PORTUGAL", 	
+			"name" : "PORTUGAL", 	
 			"color" : "(0, 255, 0, 255)", 
-			"neighbors" : "SPAIN",
+			"neighbors" : ["SPAIN"],
 			"income" : "2",
-			"atack" : "1",
+			"attack" : "1",
 			"defense" : "5",
 			"experience" : "1",
-			"modernity" : "1",
-			"number" : "10"
+			"morale" : "0",
+			"number" : "6"
 		},	
 		{ 
-			"country" : "SPAIN", 
+			"name" : "SPAIN", 
 			"color" : "(253, 255, 0, 255)", 
-			"neighbors" : "PORTUGAL",
-			"income" : "6",
-			"atack" : "1",
+			"neighbors" : ["PORTUGAL", "ANDORRA", "FRANCE", "BRITAIN"],
+			"income" : "2",
+			"attack" : "1",
 			"defense" : "5",
 			"experience" : "1",
-			"modernity" : "1", 
-			"number" : "30"
-		}
+			"morale" : "0", 
+			"number" : "20"
+		},
+		{ 
+			"name" : "FRANCE", 	
+			"color" : "(22, 0, 255, 255)", 
+			"neighbors" : ["SPAIN", "ANDORRA", "ITALY", "SWITZERLAND", "GERMANY", "LUXEMBURG", "BELGIUM", "BRITAIN"], 
+			"income" : "2",
+			"attack" : "1",
+			"defense" : "5",
+			"experience" : "1",
+			"morale" : "0",
+			"number" : "41"
+		},
+		{ 
+			"name" : "ANDORRA", 	
+			"color" : "(183, 135, 22, 255)", 
+			"neighbors" : ["SPAIN", "FRANCE"],
+			"income" : "2",
+			"attack" : "1",
+			"defense" : "5",
+			"experience" : "1",
+			"morale" : "0",
+			"number" : "1"
+		},
+		{ 
+			"name" : "ITALY",
+			"color" : "(85, 130, 7, 255)", 
+			"neighbors" : ["FRANCE", "SWITZERLAND", "AUSTRO-HUNGARY", "MONTENEGRO", "ALBANIA", "GREECE", "MALTA"],
+			"income" : "2",
+			"attack" : "1",
+			"defense" : "5",
+			"experience" : "1",
+			"morale" : "0",
+			"number" : "36"
+		}		
 	]
 }
