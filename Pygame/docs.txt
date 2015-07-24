@@ -8,3 +8,5 @@
 Make a two maps: 
  1 solid colors for click determination (hiden from player)
  2 modern looking for player wow effect
+
+ http://osdir.com/ml/python-pygame/2003-05/msg00048.html

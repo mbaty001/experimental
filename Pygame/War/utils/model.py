@@ -1,5 +1,10 @@
 from ast import literal_eval
 from logger import log
+import pygame
+
+WHITE = (255, 255, 255, 255)
+GREEN = (0, 255, 0, 255)
+BLUE = (0, 0, 128, 255)
 
 class Country(object):
     ''' class describing Country object '''
@@ -96,10 +101,11 @@ class Country(object):
     
 class World(object):
     ''' class describing whole World (all the countries) '''
-    def __init__(self):
+    def __init__(self, sizeF):
         log.debug('Creating world object')
         self.all_countries = list()
         self.player_country = None
+        self.sizeF = sizeF        
         
     def get_country_by_name(self, name):
         ''' return Country object if country with such name exists (or None) '''    
@@ -135,3 +141,36 @@ class World(object):
             else: 
                 log.debug('Player has clicked in NOT his country neighbor')
                 log.debug('TODO message will be show - this country it to far away')
+    
+    def print_status(self, surface, sizeX, sizeY):
+        pygame.draw.rect(surface, WHITE, (1, 1, sizeX, sizeY))
+        
+        fontObj = pygame.font.SysFont('calibri', self.sizeF)     
+        textSurface = fontObj.render('Your country: %s' %self.player_country, True, BLUE, WHITE)
+        textRect = textSurface.get_rect()
+        surface.blit(textSurface, textRect)
+        
+        textSurface = fontObj.render('Attack: %s' %self.player_country.get_attack(), True, BLUE, WHITE)
+        textRect.centery += (self.sizeF + 1)
+        surface.blit(textSurface, textRect)
+        
+        textSurface = fontObj.render('Defense: %s' %self.player_country.get_defense(), True, BLUE, WHITE)
+        textRect.centery += (self.sizeF + 1)
+        surface.blit(textSurface, textRect)
+        
+        textSurface = fontObj.render('Experience: %s' %self.player_country.get_experience(), True, BLUE, WHITE)
+        textRect.centery += (self.sizeF + 1)
+        surface.blit(textSurface, textRect)
+        
+        textSurface = fontObj.render('Morale: %s' %self.player_country.get_morale(), True, BLUE, WHITE)
+        textRect.centery += (self.sizeF + 1)
+        surface.blit(textSurface, textRect)
+        
+        textSurface = fontObj.render('Size of army: %s' %self.player_country.get_number(), True, BLUE, WHITE)
+        textRect.centery += (self.sizeF + 1)
+        surface.blit(textSurface, textRect)
+        
+        textSurface = fontObj.render('No of recruits: %s' %self.player_country.get_income(), True, BLUE, WHITE)
+        textRect.centery += (self.sizeF + 1)
+        surface.blit(textSurface, textRect)
+        

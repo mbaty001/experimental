@@ -13,13 +13,14 @@ COMPANY = 'Batir Software'
 NAME = 'War'
 
 class War(object):
-    def __init__(self, sizeX=800, sizeY=600):
+    def __init__(self, sizeX=800, sizeY=600, sizeFont=12):
         log.debug('Creating War object')
         self.world = ''
         pygame.init()
         pygame.display.set_caption('%s - %s %s' %(NAME, COMPANY, VERSION))
         self.sizeX = sizeX
         self.sizeY = sizeY
+        self.sizeF = sizeFont
         self.screen = pygame.display.set_mode((self.sizeX, self.sizeY))                
         
     def load_map(self, map_file='maps/%s.png' %MAP):
@@ -31,7 +32,7 @@ class War(object):
         log.debug(self.data)
         
     def create_objects(self):        
-        self.world = World()
+        self.world = World(self.sizeF)
         
         for country in self.data['countries']:
             country_object = Country(country['name'], country['color'], country['neighbors'], 
@@ -52,6 +53,11 @@ class War(object):
         self.load_map()
         self.create_objects()
         self.world.player_country = self.choose_country_for_player(self.world.all_countries)
+        
+        #        
+        # Display status window
+        #
+        self.world.print_status(self.map, self.sizeX/5, self.sizeY/3)
         
         self.screen.blit(self.map, (0,0))
         while True:            
