@@ -1,11 +1,12 @@
 import json
 import pygame
-import random
 import sys
 
 from pygame.locals import *
 from utils.logger import log
-from utils.model import Country, World
+from utils.model import *
+from pip._vendor.html5lib.filters import whitespace
+from pygame.surface import Surface
 
 VERSION = '0.02 20150721'
 MAP = 'europe1914'
@@ -38,44 +39,70 @@ class War(object):
             country_object = Country(country['name'], country['color'], country['neighbors'], 
                                      country['income'], country['attack'], country['defense'],
                                      country['experience'], country['number'], country['morale'])
-            self.world.all_countries.append(country_object)
-            
-    def choose_country_for_player(self, countries):
-        forPlayer = random.sample(countries, 1)[0]
-        log.debug('Choosen country: %s' %forPlayer)
-        return forPlayer
+            self.world.all_countries.append(country_object)            
         
     def terminate(self):
         pygame.quit()
-        sys.exit()    
+        sys.exit()
+        
+    def print_status(self, sizeX, sizeY):
+        pygame.draw.rect(self.map, WHITE, (1, 1, sizeX, sizeY))
+        fontObj = pygame.font.SysFont('calibri', self.sizeF)
+        
+        if len(self.world.msg) == 0:
+            textRect = self.print_first_msg(self.map, fontObj, 'Your country: %s' %self.world.player_country, BLUE, WHITE)            
+            self.print_next_msg(self.map, fontObj, textRect, 'Attack: %s' %self.world.player_country.get_attack(), BLUE, WHITE)
+            self.print_next_msg(self.map, fontObj, textRect, 'Defense: %s' %self.world.player_country.get_defense(), BLUE, WHITE)
+            self.print_next_msg(self.map, fontObj, textRect, 'Experience: %s' %self.world.player_country.get_experience(), BLUE, WHITE)
+            self.print_next_msg(self.map, fontObj, textRect, 'Morale: %s' %self.world.player_country.get_morale(), BLUE, WHITE)
+            self.print_next_msg(self.map, fontObj, textRect, 'Size of army: %s' %self.world.player_country.get_number(), BLUE, WHITE)
+            self.print_next_msg(self.map, fontObj, textRect, 'No of recruits: %s' %self.world.player_country.get_income(), BLUE, WHITE)
+        else:            
+            textRect = self.print_first_msg(self.map, fontObj, self.world.msg[0], BLUE, WHITE)
+            for msg in self.world.msg[1:]:
+                self.print_next_msg(self.map, fontObj, textRect, msg, BLUE, WHITE)                
+        
+    def print_first_msg(self, surface, fontObj, msg, color, bColor):
+        textSurface = fontObj.render(msg, True, color, bColor)
+        textRect = textSurface.get_rect()
+        surface.blit(textSurface, textRect)
+        return textRect
+    
+    def print_next_msg(self, surface, fontObj, textRect, msg, color, bColor):
+        textSurface = fontObj.render(msg, True, BLUE, WHITE)
+        textRect.centery += (self.sizeF + 1)
+        surface.blit(textSurface, textRect)
         
     def run(self):       
         self.load_map()
         self.create_objects()
-        self.world.player_country = self.choose_country_for_player(self.world.all_countries)
-        
+        self.world.set_player_country()
+                                
         #        
         # Display status window
         #
-        self.world.print_status(self.map, self.sizeX/5, self.sizeY/3)
-        
+        self.print_status(self.sizeX/5, self.sizeY/3)
         self.screen.blit(self.map, (0,0))
         while True:            
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    log.debug('QUIT')
-                    self.terminate()
-                if event.type == MOUSEBUTTONUP:
-                    log.debug('MOUSEBUTTONUP')
-                    mouseX, mouseY = event.pos
-                    clicked_color = self.map.get_at((mouseX, mouseY))                    
-                    log.debug('Clicked color: %s' %clicked_color)
-                    #
-                    # Analyze if player clicked a neighbor, his country or nothing important 
-                    #
-                    self.world.click(clicked_color)
-                    
-            pygame.display.update()            
+            event = pygame.event.wait()
+            if event.type == pygame.QUIT:
+                log.debug('QUIT')
+                self.terminate()
+            elif event.type == MOUSEBUTTONUP:
+                log.debug('MOUSEBUTTONUP')
+                mouseX, mouseY = event.pos
+                clicked_color = self.map.get_at((mouseX, mouseY))
+                log.debug('Clicked color: %s' %clicked_color)
+                #
+                # Analyze if player clicked a neighbor, his country or nothing important 
+                #
+                self.world.click(clicked_color)
+            
+            self.print_status(self.sizeX/5, self.sizeY/3)
+            self.screen.blit(self.map, (0,0))
+            pygame.display.update()
+            
+            self.world.msg = list()       
         
 def main():
     war = War()

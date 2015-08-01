@@ -1,6 +1,7 @@
 from ast import literal_eval
 from logger import log
 import pygame
+import random
 
 WHITE = (255, 255, 255, 255)
 GREEN = (0, 255, 0, 255)
@@ -105,8 +106,12 @@ class World(object):
         log.debug('Creating world object')
         self.all_countries = list()
         self.player_country = None
-        self.sizeF = sizeF        
-        
+        self.sizeF = sizeF
+        self.msg = list()
+    
+    def set_player_country(self):        
+        self.player_country = random.sample(self.all_countries, 1)[0]                        
+    
     def get_country_by_name(self, name):
         ''' return Country object if country with such name exists (or None) '''    
         for country in self.all_countries:
@@ -131,46 +136,16 @@ class World(object):
         log.debug('Clicked country: %s' %clicked_country)
         if clicked_country == self.player_country:
             log.debug('Player has clicked in his country')
-            log.debug('TODO Player country infortmation should be displayed')
+            self.msg = ['This is your country']
         elif clicked_country == None:
-            log.debug('Player has clicked nothing important')
+            log.debug('Player has clicked nothing important')            
         else:
             log.debug(self.player_country.get_neighbors())
             if str(clicked_country) in self.player_country.get_neighbors():
                 log.debug('Player has clicked in his country neighbor: WAR!')
+                self.msg = ['WAR is coming!']
             else: 
                 log.debug('Player has clicked in NOT his country neighbor')
-                log.debug('TODO message will be show - this country it to far away')
+                self.msg = ['This country is too far away', 'from your borders... yet']
     
-    def print_status(self, surface, sizeX, sizeY):
-        pygame.draw.rect(surface, WHITE, (1, 1, sizeX, sizeY))
-        
-        fontObj = pygame.font.SysFont('calibri', self.sizeF)     
-        textSurface = fontObj.render('Your country: %s' %self.player_country, True, BLUE, WHITE)
-        textRect = textSurface.get_rect()
-        surface.blit(textSurface, textRect)
-        
-        textSurface = fontObj.render('Attack: %s' %self.player_country.get_attack(), True, BLUE, WHITE)
-        textRect.centery += (self.sizeF + 1)
-        surface.blit(textSurface, textRect)
-        
-        textSurface = fontObj.render('Defense: %s' %self.player_country.get_defense(), True, BLUE, WHITE)
-        textRect.centery += (self.sizeF + 1)
-        surface.blit(textSurface, textRect)
-        
-        textSurface = fontObj.render('Experience: %s' %self.player_country.get_experience(), True, BLUE, WHITE)
-        textRect.centery += (self.sizeF + 1)
-        surface.blit(textSurface, textRect)
-        
-        textSurface = fontObj.render('Morale: %s' %self.player_country.get_morale(), True, BLUE, WHITE)
-        textRect.centery += (self.sizeF + 1)
-        surface.blit(textSurface, textRect)
-        
-        textSurface = fontObj.render('Size of army: %s' %self.player_country.get_number(), True, BLUE, WHITE)
-        textRect.centery += (self.sizeF + 1)
-        surface.blit(textSurface, textRect)
-        
-        textSurface = fontObj.render('No of recruits: %s' %self.player_country.get_income(), True, BLUE, WHITE)
-        textRect.centery += (self.sizeF + 1)
-        surface.blit(textSurface, textRect)
         
