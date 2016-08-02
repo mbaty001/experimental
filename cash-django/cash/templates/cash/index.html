@@ -1,0 +1,15 @@
+<html>
+<head></head>
+<body>
+ {% if error_message %}
+  <p><strong>{{ error_message }}</strong></p>
+ {% endif %}
+
+ <table>
+  <tr><th>ID</th><th>YEAR</th><th>MONTH</th><th>DATE</th><th>PERSON</th></tr>
+   {% for entry in entries %}
+    <tr><td><a href="{% url 'modify' entry.id %}">{{ entry.id }}</a></td><td>{{ entry.year }}</td><td>{{ entry.month }}</td><td>{{ entry.entry_date }}</td><td>{{ entry.person }}</td></tr>
+   {% endfor %}
+ </table>
+</body>
+<html>
