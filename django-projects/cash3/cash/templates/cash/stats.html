@@ -1,0 +1,15 @@
+{% extends 'cash/base.html' %}
+
+{% block content %}
+    <b>{{ cash.person }}</b> has earned <b>{{ cash.cash }}</b> PLN bank fees just by getting money earlier by {{ cash.total_difference }} hours.<br>
+Assuming: {{ cash.salary }}PLN gross, {{ cash.bank }} percent bank interest, {{ cash.belka }} percent Belka's tax <br>
+
+  {{ day_chart.as_html }}
+
+  {{ time_chart.as_html }}
+
+  {{ delta_chart.as_html }}
+
+  {{ delta_sum_chart.as_html }}
+
+{% endblock content %}

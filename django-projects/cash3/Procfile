@@ -1,0 +1,1 @@
+web: gunicorn cash3.wsgi --log-file -

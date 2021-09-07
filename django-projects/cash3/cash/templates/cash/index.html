@@ -1,0 +1,12 @@
+{% extends 'cash/base.html' %}
+
+{% block content %}
+<table>
+  <tr><th>ID</th><th>YEAR</th><th>MONTH</th><th>DATE</th><th>PERSON</th></tr>
+  {% for entry in entries %}
+    <tr><td><a href="{% url 'cash:edit_entry' entry.id%}">{{ entry.id }}</a></td><td>{{ entry.year }}</td><td>{{ entry.month }}</td><td>{{ entry.entry_date }}</td><td>{{ entry.person }}</td></tr>
+  {% empty %}
+    <p>There are no entries yet</p>
+  {% endfor %}
+</table>
+{% endblock content %}
