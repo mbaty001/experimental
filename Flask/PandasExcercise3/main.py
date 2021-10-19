@@ -8,7 +8,5 @@ app.config.from_object(f'config.{config_env.capitalize()}Config')
 
 from views import *
 
-app.add_url_rule("/hello", endpoint="hello")
-
 if __name__ == '__main__':
     app.run()
