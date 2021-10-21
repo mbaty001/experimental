@@ -20,17 +20,6 @@ def test_find_possible_movements():
 
 def test_main():
     assert main(1) == 18
-<<<<<<< HEAD
-    assert main(2) == 59
-    assert main(3) == 199
-    assert main(4) == 623
-    assert main(5) == 1926
-    assert main(6) == 5889
-    assert main(7) == 17885
-    assert main(8) == 54786
-    assert main(9) == 165686
-    assert main(10) == 506242
-=======
     assert main(2) == 60
     assert main(3) == 214
     assert main(4) == 732
@@ -40,4 +29,3 @@ def test_main():
     assert main(8) == 93204
     assert main(9) == 306288
     assert main(10) == 1013398
->>>>>>> 31cfa1c (chess knight problem)
