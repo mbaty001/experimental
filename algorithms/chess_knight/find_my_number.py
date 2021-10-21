@@ -14,8 +14,7 @@ def find_possible_movements(start_point, key_sequence, total_key_sequences, no_o
     if len(key_sequence) == length:
         return total_key_sequences + 1
 
-    x = start_point[0]
-    y = start_point[1]
+    (x, y) = start_point
 
     jumps = ((-2,1),(-1,2),(1,2),(2,1),(2,-1),(1,-2),(-1,-2),(-2,-1))
     for jump in jumps:
@@ -23,10 +22,11 @@ def find_possible_movements(start_point, key_sequence, total_key_sequences, no_o
         ty = y + jump[1]
         if check_if_move_is_possible(tx, ty):
             if no_of_vowels < 2 or [tx, ty] not in VOWELS:
-                if [tx, ty] in VOWELS:
-                    no_of_vowels += 1
                 key_sequence_copy = key_sequence + [(tx, ty)]
-                total_key_sequences = find_possible_movements((tx, ty), key_sequence_copy, total_key_sequences, no_of_vowels, length)
+                if [tx, ty] in VOWELS:
+                    total_key_sequences = find_possible_movements((tx, ty), key_sequence_copy, total_key_sequences, no_of_vowels+1, length)
+                else:
+                    total_key_sequences = find_possible_movements((tx, ty), key_sequence_copy, total_key_sequences, no_of_vowels, length)
     return total_key_sequences
 
 def check_if_move_is_possible(tx, ty):
