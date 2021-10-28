@@ -4,11 +4,17 @@
 from heapq import heappush, heappop # for priority queue
 import random
 
-cbx = 8; cby = 8 # width and height of the chessboard
-cb = [[0 for x in range(cbx)] for y in range(cby)] # chessboard
+# width and height of the chessboard
+cbx = 8
+cby = 8
+
+ # chessboard
+cb = [[0 for x in range(cbx)] for y in range(cby)]
+
 # directions the Knight can move on the chessboard
 dx = [-2, -1, 1, 2, -2, -1, 1, 2]
 dy = [1, 2, 2, 1, -1, -2, -2, -1]
+
 # start the Knight from a random position
 kx = random.randint(0, cbx - 1)
 ky = random.randint(0, cby - 1)
@@ -27,13 +33,16 @@ for k in range(cbx * cby):
                     ex = nx + dx[j]
                     ey = ny + dy[j]
                     if 0<=ex<cbx and 0<=ey<cby:
-                        if cb[ey][ex] == 0: ctr += 1
+                        if cb[ey][ex] == 0:
+                            ctr += 1
                 heappush(pq, (ctr, i))
     # move to the neighbor that has min number of available neighbors
     if len(pq) > 0:
         (p, m) = heappop(pq)
-        kx += dx[m]; ky += dy[m]
-    else: break
+        kx += dx[m]
+        ky += dy[m]
+    else:
+        break
 
 # print cb
 for cx in range(cbx):
