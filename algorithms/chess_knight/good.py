@@ -12,7 +12,8 @@ There is no wrapping allowed on a knight move.
 Below are some examples of knight moves:
 OWNER- SANJAY KUMAR  
 """
-              
+import argparse
+
 #Identify which key identities are vowels ON THE BASIS OF INDEX
 isVowel = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0] 
 
@@ -62,17 +63,12 @@ def TraverseKeySequences(key_array, remaining_keys, vowelsAllowed):
 if __name__ == '__main__':
     """main function"""    
     
-    allowableVowels = 2                                                  # Allowed vowels
-    totalKeysInSequence = 10                                             # sequence length    
-    
-    enteredValue =10 
-    if enteredValue:
-        if 11 > int(enteredValue) > 0 :
-            totalKeysInSequence = int(enteredValue)
-        else:
-            print ("Entered Value is not in range So "  )
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--length", default=10, help="Sequence length")
+    parser.add_argument("--allowableVowels", default=2, help="Allowed vowels")
+    args = vars(parser.parse_args())
          
     # First the key identity which makes the rest of the code easier to read.
     keyIdentity = [ {'A':0}, {'B':1}, {'C':2}, {'D':3}, {'E':4}, {'F':5}, {'G':6}, {'H':7}, {'I':8}, {'J':9}, {'K':10}, {'L':11}, {'M':12}, {'N':13}, {'O':14}, {'1':15}, {'2':16}, {'3' :17}]
     
-    print ("Total number of valid "+str(totalKeysInSequence)+ " key sequences are: " + str(TraverseKeySequences(range(len(keyIdentity)), totalKeysInSequence, allowableVowels)))  
+    print (f"Total number of valid {args['length']} key sequences are: {TraverseKeySequences(range(len(keyIdentity)), args['length'], args['allowableVowels'])}")
