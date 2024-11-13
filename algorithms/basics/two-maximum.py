@@ -1,7 +1,7 @@
 from cmath import inf
 
 
-l = [-10, 3,21,2,45,4365, 54]
+l = [5000, 3,21,2,45,4365, 54]
 
 max_one = -inf
 max_two = -inf
