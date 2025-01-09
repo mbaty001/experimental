@@ -8,6 +8,6 @@ class A:
 
 a = A()
 
-print(a.y)
+print(a.y())
 
 print(f"__dict__ attributes: {a.__dict__}")
