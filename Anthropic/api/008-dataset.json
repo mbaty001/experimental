@@ -1,12 +1,15 @@
 
 [
   {
-    "task": "Write a Python function that takes an AWS S3 bucket name and returns True if it follows AWS naming conventions (lowercase, 3-63 characters, no consecutive dots), False otherwise."
+    "task": "Parse an AWS S3 bucket name from an S3 URI (e.g., s3://my-bucket/path/to/object) and extract just the bucket name",
+    "format": "regex"
   },
   {
-    "task": "Create a JSON object that represents an AWS IAM policy allowing read-only access to a specific S3 bucket named 'my-data-bucket'."
+    "task": "Create a Python function that takes an AWS region code and returns the corresponding region name (e.g., 'us-east-1' -> 'N. Virginia')",
+    "format": "python"
   },
   {
-    "task": "Write a regex pattern that validates AWS access key IDs, which start with 'AKIA' followed by 16 alphanumeric characters."
+    "task": "Generate a valid AWS IAM policy JSON document that grants read-only access to all objects in a specific S3 bucket",
+    "format": "json"
   }
 ]
