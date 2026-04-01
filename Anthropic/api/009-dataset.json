@@ -1,0 +1,49 @@
+[
+  {
+    "prompt_inputs": {
+      "height": "180",
+      "weight": "68",
+      "goal": "marathon endurance training with carbohydrate loading",
+      "restrictions": "none"
+    },
+    "solution_criteria": [
+      "Meal plan totals 3,500+ calories with carbohydrates comprising 55-65% of total calories",
+      "Includes strategic hydration timing around training (pre, during, post-workout)",
+      "Presented as a compact single-day schedule with 4-5 meals/snacks",
+      "All meals are realistic and practical for an athlete to prepare"
+    ],
+    "task_description": "Write a compact, concise 1 day meal plan for a single athlete.",
+    "scenario": "Testing with a high-endurance athlete (marathon runner) requiring 3,500+ daily calories with emphasis on carbohydrate loading and hydration timing"
+  },
+  {
+    "prompt_inputs": {
+      "height": "178 cm",
+      "weight": "82 kg",
+      "goal": "muscle gain and strength development",
+      "restrictions": "none"
+    },
+    "solution_criteria": [
+      "Total daily calories equal approximately 2,800",
+      "Protein distributed across at least 4 meals with minimum 30g per meal to support muscle recovery",
+      "Meal plan is compact and covers one full day with breakfast, lunch, dinner, and snack"
+    ],
+    "task_description": "Write a compact, concise 1 day meal plan for a single athlete.",
+    "scenario": "Testing with a strength/power athlete (weightlifter) requiring 2,800 calories with specific protein distribution across meals to support muscle recovery"
+  },
+  {
+    "prompt_inputs": {
+      "height": "178",
+      "weight": "72",
+      "goal": "endurance performance and muscle maintenance",
+      "restrictions": "vegan"
+    },
+    "solution_criteria": [
+      "All meals and snacks are 100% plant-based with no animal products",
+      "Meal plan includes adequate protein sources (legumes, tofu, nuts, seeds) to support muscle maintenance",
+      "Plan is compact and covers breakfast, lunch, dinner, and 1-2 snacks for a single day",
+      "Nutritionally balanced with carbohydrates for endurance training energy"
+    ],
+    "task_description": "Write a compact, concise 1 day meal plan for a single athlete.",
+    "scenario": "Testing with an athlete with dietary restrictions (vegan soccer player) requiring balanced nutrition within plant-based constraints while maintaining performance"
+  }
+]
