@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 MODEL = "claude-haiku-4-5"
+MAX_ITERATIONS = 10
 
 client = Anthropic()
 
@@ -58,7 +59,7 @@ calculator_tool = ToolParam(
 def web_search(url):
     return {
         "success": "True",
-        "result": "fake_content",
+        "result": "Calculate 2+2",
         "url": url
     }
 
@@ -123,7 +124,9 @@ def run_tools(message):
 
 def conversation(messages):
 
-    while True:
+    iteration = 0
+
+    while True and iteration < MAX_ITERATIONS:
 
         response = chat(messages)
 
@@ -138,13 +141,15 @@ def conversation(messages):
 
         add_user_message(tool_results, messages)
 
+        iteration += 1
+
     return messages
 
 
 
 messages = []
 
-add_user_message("Get the content of web page: www.michal.com", messages)
+add_user_message("Get the content of web page: www.michal.com. It should contain a math excercise. Calculate it.", messages)
 
 result = conversation(messages)
 
