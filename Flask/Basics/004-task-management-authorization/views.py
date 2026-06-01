@@ -1,14 +1,40 @@
 from datetime import datetime
 from uuid import uuid4
+from functools import wraps
+from hashlib import sha1
 
 from flask import make_response, request, Blueprint
 
 from app import app
-from db import task_storage
+from db import task_storage, users
 
 bp = Blueprint("tasks", __name__)
 
+def get_user_tasks(username):
+    return {
+        task_id: task_info for task_id, task_info in task_storage.items()
+        if task_info["username"] == username
+    }
+
+def auth_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        auth = request.authorization
+        if not auth:
+            return make_response({"message": "Unauthorized"}, 401)
+
+        username = auth.username
+        password = auth.password
+
+        if username not in users or sha1(password.encode()).hexdigest() != users[username]:
+            return make_response({"message": "Invalid username or password"}, 401)
+
+        return func(*args, **kwargs)
+    
+    return wrapper
+
 @bp.get("/")
+@auth_required
 def list_tasks():
     completed_flag = request.args.get("completed")  # fetch the query parameter
     # check that query parameter has valid value
@@ -20,11 +46,9 @@ def list_tasks():
 
     flag_mapping = {"true": True, "false": False}
 
-    if not completed_flag:
-        # return all tasks if query parameter was not provided
-        tasks = task_storage
-    else:
-        # filter only not completed tasks
+    tasks = get_user_tasks(request.authorization.username)  # get tasks of the current user
+
+    if completed_flag:
         tasks = {
             task_id: task_info for task_id, task_info in task_storage.items()
             if task_info["is_completed"] == flag_mapping[completed_flag.lower()]
@@ -34,12 +58,14 @@ def list_tasks():
 
 
 @bp.post("/")
+@auth_required
 def create_task():
     task_id = uuid4().hex  # generate task ID
     task_info = {
         "title": request.json.get("title", "Missed title"),  # get `title` from the request body
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # get current time
         "is_completed": False,  # by default a new task is not completed
+        "username": request.authorization.username,  # get username from the authorization header
     }
 
     task_storage[task_id] = task_info  # save the task in the storage
@@ -48,6 +74,7 @@ def create_task():
 
 
 @bp.put("/<task_id>")
+@auth_required
 def mark_completed(task_id):
     task = task_storage.get(task_id)  # try to find task by the provided ID from the path
     if not task:
@@ -60,6 +87,7 @@ def mark_completed(task_id):
 
 
 @bp.delete("/<task_id>")
+@auth_required
 def delete(task_id):
     task = task_storage.pop(task_id, None)  # try to delete task by the provided ID from the path
     if not task:
