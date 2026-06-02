@@ -1,0 +1,103 @@
+from datetime import datetime
+from uuid import uuid4
+from functools import wraps
+from hashlib import sha1
+
+from flask import make_response, render_template, request, Blueprint, session, redirect, url_for
+
+import jwt
+from app import app
+from db import task_storage, users
+
+bp = Blueprint("tasks", __name__)
+
+def get_user_tasks(username):
+    return {
+        task_id: task_info for task_id, task_info in task_storage.items()
+        if task_info["username"] == username
+    }
+
+def auth_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        token = session.get("token")  # get token from the session
+        if not token:
+            return redirect(url_for("auth.login"))
+        try:
+            payload = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+            username = payload["username"]
+            if username not in users:
+                return redirect(url_for("auth.login"))
+            
+            session["username"] = username
+        
+        except jwt.exceptions.DecodeError:
+            return redirect(url_for("auth.login"))
+
+        return func(*args, **kwargs)
+    
+    return wrapper
+
+@bp.get("/")
+@auth_required
+def list_tasks():
+    completed_flag = request.args.get("completed")  # fetch the query parameter
+    # check that query parameter has valid value
+    if completed_flag and completed_flag.lower() not in ("true", "false"):
+        return make_response(
+            {"message": "Wrong value for `completed`. Expected `true` or `false`."},
+            400,
+        )
+
+    flag_mapping = {"true": True, "false": False}
+
+    tasks = get_user_tasks(request.authorization.username)  # get tasks of the current user
+
+    if completed_flag:
+        tasks = {
+            task_id: task_info for task_id, task_info in task_storage.items()
+            if task_info["is_completed"] == flag_mapping[completed_flag.lower()]
+        }
+
+    return render_template("tasks.html", tasks=tasks)  # return tasks as HTML page
+
+
+@bp.post("/")
+@auth_required
+def create_task():
+    task_id = uuid4().hex  # generate task ID
+    task_info = {
+        "title": request.json.get("title", "Missed title"),  # get `title` from the request body
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # get current time
+        "is_completed": False,  # by default a new task is not completed
+        "username": request.authorization.username,  # get username from the authorization header
+    }
+
+    task_storage[task_id] = task_info  # save the task in the storage
+
+    return make_response({"id": task_id})  # return ID of the new task
+
+
+@bp.put("/<task_id>")
+@auth_required
+def mark_completed(task_id):
+    task = task_storage.get(task_id)  # try to find task by the provided ID from the path
+    if not task:
+        # say to a user that the task with provided ID doesn't exist and provide 404 status code
+        return make_response({"message": "Task not found"}, 404)
+
+    task["is_completed"] = True  # mark the task as completed
+
+    return make_response({"is_completed": True})
+
+
+@bp.delete("/<task_id>")
+@auth_required
+def delete(task_id):
+    task = task_storage.pop(task_id, None)  # try to delete task by the provided ID from the path
+    if not task:
+        # say to a user that the task with provided ID doesn't exist and provide 404 status code
+        return make_response({"message": "Task not found"}, 404)
+
+    return make_response({"deleted": True})
+
