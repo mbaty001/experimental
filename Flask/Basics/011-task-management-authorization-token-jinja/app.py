@@ -1,3 +1,3 @@
 from flask import Flask
 
-app = Flask("TaskManager")
+app = Flask("TaskManager", template_folder="templates")
