@@ -24,3 +24,4 @@ build/
 *.so
 *.dll
 *.dylib
+*.db
