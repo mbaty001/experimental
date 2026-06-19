@@ -16,7 +16,10 @@ List all clients (GET /api/clients)
 Get a single client (GET /api/clients/)
 Update a client (PATCH /api/clients/)
 Delete a client (DELETE /api/clients/)
+
 Implement CRUD endpoints for itineraries:
+
+
 Create an itinerary (POST /api/itineraries)
 List all itineraries (GET /api/itineraries)
 Get a single itinerary (GET /api/itineraries/)
