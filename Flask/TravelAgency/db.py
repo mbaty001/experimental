@@ -42,7 +42,7 @@ def delete_client(client_id: int) -> bool:
 def create_itinerary(client_id: int, destination: str, start_date: datetime, end_date: datetime, activities: str|None = None) -> Itinerary:
     client = db.session.get(Client, client_id)
     if not client:
-        raise ValueError("Client not found")
+        raise ValueError(f"Client not found. Id: {client_id}")
     new_itinerary = Itinerary(destination=destination, start_date=start_date, end_date=end_date, activities=activities, client=client)
     db.session.add(new_itinerary)
     db.session.commit()
@@ -50,6 +50,9 @@ def create_itinerary(client_id: int, destination: str, start_date: datetime, end
 
 def get_itinerary(itinerary_id: int) -> Itinerary|None:
     return db.session.get(Itinerary, itinerary_id)
+
+def list_itineraries() -> list[Itinerary]:
+    return db.session.execute(select(Itinerary)).scalars().all()
 
 def update_itinerary(itinerary_id: int, destination: str|None = None, start_date: datetime|None = None, end_date: datetime|None = None, activities: str|None = None) -> Itinerary|None:
     itinerary = db.session.get(Itinerary, itinerary_id)

@@ -71,3 +71,49 @@ def delete_client(client_id):
         return make_response({"message": f"Client deleted successfully. Id: {client_id}"}, 200)
     except Exception:
         return make_response({"message": "Internal server error."}, 500)
+
+#Create an itinerary (POST /api/itineraries)
+@bp.post("/api/itineraries")
+def create_itineraries():
+    try:
+        data = request.get_json()
+        print(f"KUKU: {data}")
+        client_id = data.get("client_id")
+        destination = data.get("destination")
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        activities = data.get("activities")   
+
+        if not destination or not start_date or not end_date:
+            return make_response({"message": "Destination, start_date and end_date are required."}, 400)              
+    
+        new_itinerary = db.create_itinerary(
+            client_id=client_id,
+            destination=destination,
+            start_date=start_date,
+            end_date=end_date,
+            activities=activities
+        )
+        return make_response(
+            {
+                "id": new_itinerary.id,
+                "destination": new_itinerary.destination, 
+                "start_date": new_itinerary.start_date,
+                "end_date": new_itinerary.end_date,
+                "activities": new_itinerary.activities
+            }, 201
+        )
+    except ValueError as e:
+        return make_response({"message": str(e)}, 404 )
+    except Exception as e:
+        return make_response({"message": "Internal server error."}, 500)
+    
+# List all itineraries (GET /api/itineraries)
+@bp.get("/api/itineraries")
+def get_all_itineraries():
+    try:
+        itineraries = db.list_itineraries()
+        return make_response([{"id": itinerary.id, "client_id": itinerary.client_id, "destination": itinerary.destination, "start_date": itinerary.start_date, "end_date": itinerary.end_date, "activities": itinerary.activities, "created_at": itinerary.created_at, "updated_at": itinerary.updated_at} for itinerary in itineraries], 200)
+    except Exception as e:
+        return make_response({"message": "Internal server error."}, 500)
+
