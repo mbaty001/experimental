@@ -1,7 +1,20 @@
-from flask import Blueprint, request, redirect, session, url_for, render_template, make_response
-import db
+from smtplib import SMTPAuthenticationError
 
-bp = Blueprint("clients", __name__, template_folder="templates/clients") 
+from flask import (
+    Blueprint,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+
+import db
+import email_handler
+
+bp = Blueprint("clients", __name__, template_folder="templates/clients")
+
 
 # Create a client (POST /api/clients)
 @bp.post("/api/clients")
@@ -15,18 +28,41 @@ def create_client_post():
         if not name or not email:
             return make_response({"message": "Name and email are required."}, 400)
         new_client = db.create_client(name, email, phone, address)
-        return make_response({"id": new_client.id, "name": new_client.name, "email": new_client.email, "phone": new_client.phone, "address": new_client.address}, 201)
+        return make_response(
+            {
+                "id": new_client.id,
+                "name": new_client.name,
+                "email": new_client.email,
+                "phone": new_client.phone,
+                "address": new_client.address,
+            },
+            201,
+        )
     except Exception as e:
         return make_response({"message": "Internal server error."}, 500)
+
 
 # List all clients (GET /api/clients)
 @bp.get("/api/clients")
 def list_clients():
     try:
         clients = db.list_clients()
-        return make_response([{"id": client.id, "name": client.name, "email": client.email, "phone": client.phone, "address": client.address} for client in clients], 200)
+        return make_response(
+            [
+                {
+                    "id": client.id,
+                    "name": client.name,
+                    "email": client.email,
+                    "phone": client.phone,
+                    "address": client.address,
+                }
+                for client in clients
+            ],
+            200,
+        )
     except Exception as e:
         return make_response({"message": "Internal server error."}, 500)
+
 
 # Get a single client (GET /api/clients/)
 @bp.get("/api/clients/<int:client_id>")
@@ -35,10 +71,20 @@ def get_client(client_id):
         client = db.get_client(client_id)
         if not client:
             return make_response({"message": "Client not found."}, 404)
-        return make_response({"id": client.id, "name": client.name, "email": client.email, "phone": client.phone, "address": client.address}, 200)
+        return make_response(
+            {
+                "id": client.id,
+                "name": client.name,
+                "email": client.email,
+                "phone": client.phone,
+                "address": client.address,
+            },
+            200,
+        )
     except Exception as e:
         return make_response({"message": "Internal server error."}, 500)
-    
+
+
 # Update a client (PATCH /api/clients/)
 @bp.patch("/api/clients/<int:client_id>")
 def patch_client(client_id):
@@ -52,14 +98,26 @@ def patch_client(client_id):
         if name is None and email is None and phone is None and address is None:
             return make_response({"message": "No fields provided to update."}, 400)
 
-        updated = db.update_client(client_id, name=name, email=email, phone=phone, address=address)
+        updated = db.update_client(
+            client_id, name=name, email=email, phone=phone, address=address
+        )
         if not updated:
             return make_response({"message": "Client not found."}, 404)
 
-        return make_response({"id": updated.id, "name": updated.name, "email": updated.email, "phone": updated.phone, "address": updated.address}, 200)
+        return make_response(
+            {
+                "id": updated.id,
+                "name": updated.name,
+                "email": updated.email,
+                "phone": updated.phone,
+                "address": updated.address,
+            },
+            200,
+        )
     except Exception as e:
         return make_response({"message": "Internal server error."}, 500)
-    
+
+
 # Delete a client (DELETE /api/clients/)
 @bp.delete("/api/clients/<int:client_id>")
 def delete_client(client_id):
@@ -67,53 +125,185 @@ def delete_client(client_id):
         deleted = db.delete_client(client_id)
         if not deleted:
             return make_response({"message": f"Client not found. Id: {client_id}"}, 404)
-        
-        return make_response({"message": f"Client deleted successfully. Id: {client_id}"}, 200)
+
+        return make_response(
+            {"message": f"Client deleted successfully. Id: {client_id}"}, 200
+        )
     except Exception:
         return make_response({"message": "Internal server error."}, 500)
 
-#Create an itinerary (POST /api/itineraries)
+
+# Create an itinerary (POST /api/itineraries)
 @bp.post("/api/itineraries")
 def create_itineraries():
     try:
         data = request.get_json()
-        print(f"KUKU: {data}")
+
         client_id = data.get("client_id")
         destination = data.get("destination")
         start_date = data.get("start_date")
         end_date = data.get("end_date")
-        activities = data.get("activities")   
+        activities = data.get("activities")
 
         if not destination or not start_date or not end_date:
-            return make_response({"message": "Destination, start_date and end_date are required."}, 400)              
-    
+            return make_response(
+                {"message": "Destination, start_date and end_date are required."}, 400
+            )
+
         new_itinerary = db.create_itinerary(
             client_id=client_id,
             destination=destination,
             start_date=start_date,
             end_date=end_date,
-            activities=activities
+            activities=activities,
         )
         return make_response(
             {
                 "id": new_itinerary.id,
-                "destination": new_itinerary.destination, 
+                "destination": new_itinerary.destination,
                 "start_date": new_itinerary.start_date,
                 "end_date": new_itinerary.end_date,
-                "activities": new_itinerary.activities
-            }, 201
+                "activities": new_itinerary.activities,
+            },
+            201,
         )
     except ValueError as e:
-        return make_response({"message": str(e)}, 404 )
+        return make_response({"message": str(e)}, 404)
     except Exception as e:
         return make_response({"message": "Internal server error."}, 500)
-    
+
+
 # List all itineraries (GET /api/itineraries)
 @bp.get("/api/itineraries")
 def get_all_itineraries():
     try:
         itineraries = db.list_itineraries()
-        return make_response([{"id": itinerary.id, "client_id": itinerary.client_id, "destination": itinerary.destination, "start_date": itinerary.start_date, "end_date": itinerary.end_date, "activities": itinerary.activities, "created_at": itinerary.created_at, "updated_at": itinerary.updated_at} for itinerary in itineraries], 200)
+        return make_response(
+            [
+                {
+                    "id": itinerary.id,
+                    "client_id": itinerary.client_id,
+                    "destination": itinerary.destination,
+                    "start_date": itinerary.start_date,
+                    "end_date": itinerary.end_date,
+                    "activities": itinerary.activities,
+                    "created_at": itinerary.created_at,
+                    "updated_at": itinerary.updated_at,
+                }
+                for itinerary in itineraries
+            ],
+            200,
+        )
     except Exception as e:
         return make_response({"message": "Internal server error."}, 500)
 
+
+# Get a single itinerary (GET /api/itineraries/)
+@bp.get("/api/itineraries/<int:itinerary_id>")
+def get_itinerary(itinerary_id: int):
+    try:
+        itinerary = db.get_itinerary(itinerary_id)
+        if not itinerary:
+            return make_response(
+                {"message": f"Itinerary not found. Id: {itinerary_id}"}, 404
+            )
+        return make_response(
+            {
+                "id": itinerary.id,
+                "client_id": itinerary.client_id,
+                "destination": itinerary.destination,
+                "start_date": itinerary.start_date,
+                "end_date": itinerary.end_date,
+                "activities": itinerary.activities,
+                "created_at": itinerary.created_at,
+                "updated_at": itinerary.updated_at,
+            },
+            200,
+        )
+    except Exception as e:
+        return make_response({"message": "Internal server error."}, 500)
+
+
+# Update an itinerary (PATCH /api/itineraries/)
+@bp.patch("/api/itineraries/<int:itinerary_id>")
+def update_itinerary(itinerary_id):
+    try:
+        data = request.get_json()
+
+        destination = data.get("destination")
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        activities = data.get("activities")
+
+        if (
+            destination is None
+            and start_date is None
+            and end_date is None
+            and activities is None
+        ):
+            return make_response({"message": "No fields provided to update."}, 400)
+
+        updated = db.update_itinerary(
+            itinerary_id,
+            destination=destination,
+            start_date=start_date,
+            end_date=end_date,
+            activities=activities,
+        )
+        if not updated:
+            return make_response(
+                {"message": f"Itinerary not found. Id: {itinerary_id}"}, 404
+            )
+
+        return make_response(
+            {
+                "id": updated.id,
+                "client_id": updated.client_id,
+                "destination": updated.destination,
+                "start_date": updated.start_date,
+                "end_date": updated.end_date,
+                "activities": updated.activities,
+                "created_at": updated.created_at,
+                "updated_at": updated.updated_at,
+            },
+            200,
+        )
+    except Exception as e:
+        return make_response({"message": "Internal server error."}, 500)
+
+
+# Delete an itinerary (DELETE /api/itineraries/)
+@bp.delete("/api/itineraries/<int:itinerary_id>")
+def delete_itinerary(itinerary_id):
+    try:
+        deleted = db.delete_itinerary(itinerary_id)
+        if not deleted:
+            return make_response(
+                {"message": f"Itinerary not found. Id: {itinerary_id}"}, 404
+            )
+
+        return make_response(
+            {"message": f"Itinerary deleted successfully. Id: {itinerary_id}"}, 200
+        )
+    except Exception:
+        return make_response({"message": "Internal server error."}, 500)
+
+
+# Send itinerary details via email (POST /api/itineraries//send_email).
+@bp.post("/api/itineraries/send_email")
+def itinerary_send_email():
+    try:
+        data = request.get_json()
+        receipient = data.get("receipient")
+        if not receipient:
+            return make_response({"message": "Receipient cannot be empty."}, 400)
+        resp = email_handler.send(receipient=receipient)
+        if resp:
+            return make_response({"message": "Email sent successfully."}, 200)
+        return make_response({"message": "Email delivery failed."}, 400)
+    except SMTPAuthenticationError as err:
+        return make_response(
+            {"message": "Email delivery failed. Authorization error."}, 403
+        )
+    except Exception as err:
+        return make_response({"message": "Email delivery failed. Internal error."}, 500)

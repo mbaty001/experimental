@@ -19,13 +19,14 @@ Delete a client (DELETE /api/clients/)
 
 Implement CRUD endpoints for itineraries:
 
-
 Create an itinerary (POST /api/itineraries)
 List all itineraries (GET /api/itineraries)
 Get a single itinerary (GET /api/itineraries/)
 Update an itinerary (PATCH /api/itineraries/)
 Delete an itinerary (DELETE /api/itineraries/)
+
 Implement an endpoint to send itinerary details via email (POST /api/itineraries//send_email).
+
 4. Frontend Routes and Views
 Implement frontend routes for clients:
 List clients

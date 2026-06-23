@@ -1,5 +1,5 @@
-from app_init import create_app
 import views
+from app_init import create_app
 
 app = create_app(views)
 
