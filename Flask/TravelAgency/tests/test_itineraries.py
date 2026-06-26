@@ -1,5 +1,5 @@
 from smtplib import SMTPAuthenticationError
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import pytest
 from sqlalchemy import DateTime
@@ -205,57 +205,100 @@ class TestDeleteItinerary:
 
 class TestItinerariesEmail(TestItineraries):
 
-    # @bp.post("/api/itineraries/send_email")
-    # def itinerary_send_email():
-    #     try:
-    #         data = request.get_json()
-    #         receipient = data.get("receipient")
-    #         if not receipient:
-    #             return make_response({"message": "Receipient cannot be empty."}, 400)
-    #         resp = email_handler.send(receipient=receipient)
-    #         if resp:
-    #             return make_response({"message": "Email sent successfully"}, 200)
-    #         return make_response({"message": "Email sent failed."}, 400)
-    #     except SMTPAuthenticationError as err:
-    #         return make_response({"message": "Email sent failed. Authorization error"}, 403)
-    #     except Exception as err:
-    #         return make_response({"message": "Email sent failed. Internal error"}, 500)
+    def test_sunny_path(self, test_app_client, test_itineraries):
+        test_itinerary = test_itineraries[0]
+        test_itinerary.client_id = 42
 
-    def test_sunny_path(self, test_app_client):
+        mock_client = Mock()
+        mock_client.email = "test@example.com"
 
-        with patch("views.email_handler.send", return_value=True):
+        with patch("views.db.get_itinerary", return_value=test_itinerary), \
+             patch("views.db.get_client", return_value=mock_client), \
+             patch("views.email_handler.send", return_value=True) as mock_send:
+
             resp = test_app_client.post(
-                "/api/itineraries/send_email", json={"receipient": "test@kuku.com"}
+                f"/api/itineraries/{test_itinerary.id}/send_email"
             )
 
             assert resp.status_code == 200
-            assert resp.get_json() == {"message": "Email sent successfully."}
+            assert resp.get_json() == {
+                "message": f"Email successfully dispatched to {mock_client.email}."
+            }
+            mock_send.assert_called_once_with(receipient=mock_client.email)
 
-    def test_empty_receipient(self, test_app_client):
+    def test_itinerary_not_found(self, test_app_client):
+        with patch("views.db.get_itinerary", return_value=None):
+            resp = test_app_client.post("/api/itineraries/999/send_email")
 
-        resp = test_app_client.post("/api/itineraries/send_email", json={})
+            assert resp.status_code == 404
+            assert resp.get_json() == {"message": "Itinerary not found. Id: 999"}
 
-        assert resp.status_code == 400
-        assert resp.get_json() == {"message": "Receipient cannot be empty."}
+    def test_client_not_found(self, test_app_client, test_itineraries):
+        test_itinerary = test_itineraries[0]
 
-    def test_failed_path(self, test_app_client):
+        with patch("views.db.get_itinerary", return_value=test_itinerary), \
+             patch("views.db.get_client", return_value=None):
 
-        with patch("views.email_handler.send", return_value=False):
             resp = test_app_client.post(
-                "/api/itineraries/send_email", json={"receipient": "test@kuku.com"}
+                f"/api/itineraries/{test_itinerary.id}/send_email"
+            )
+
+            assert resp.status_code == 404
+            assert resp.get_json() == {
+                "message": "Client or client email address not found."
+            }
+
+    def test_client_email_not_found(self, test_app_client, test_itineraries):
+        test_itinerary = test_itineraries[0]
+        mock_client = Mock()
+        mock_client.email = None
+
+        with patch("views.db.get_itinerary", return_value=test_itinerary), \
+             patch("views.db.get_client", return_value=mock_client):
+
+            resp = test_app_client.post(
+                f"/api/itineraries/{test_itinerary.id}/send_email"
+            )
+
+            assert resp.status_code == 404
+            assert resp.get_json() == {
+                "message": "Client or client email address not found."
+            }
+
+    def test_failed_path(self, test_app_client, test_itineraries):
+        test_itinerary = test_itineraries[0]
+        test_itinerary.client_id = 42
+
+        mock_client = Mock()
+        mock_client.email = "test@example.com"
+
+        with patch("views.db.get_itinerary", return_value=test_itinerary), \
+             patch("views.db.get_client", return_value=mock_client), \
+             patch("views.email_handler.send", return_value=False):
+
+            resp = test_app_client.post(
+                f"/api/itineraries/{test_itinerary.id}/send_email"
             )
 
             assert resp.status_code == 400
             assert resp.get_json() == {"message": "Email delivery failed."}
 
-    def test_failed_authorization(self, test_app_client):
+    def test_failed_authorization(self, test_app_client, test_itineraries):
+        test_itinerary = test_itineraries[0]
+        test_itinerary.client_id = 42
 
-        with patch(
-            "views.email_handler.send",
-            side_effect=SMTPAuthenticationError(403, "Authorization error"),
-        ):
+        mock_client = Mock()
+        mock_client.email = "test@example.com"
+
+        with patch("views.db.get_itinerary", return_value=test_itinerary), \
+             patch("views.db.get_client", return_value=mock_client), \
+             patch(
+                 "views.email_handler.send",
+                 side_effect=SMTPAuthenticationError(403, "Authorization error"),
+             ):
+
             resp = test_app_client.post(
-                "/api/itineraries/send_email", json={"receipient": "test@kuku.com"}
+                f"/api/itineraries/{test_itinerary.id}/send_email"
             )
 
             assert resp.status_code == 403
@@ -263,11 +306,22 @@ class TestItinerariesEmail(TestItineraries):
                 "message": "Email delivery failed. Authorization error."
             }
 
-    def test_failed_internal(self, test_app_client):
+    def test_failed_internal(self, test_app_client, test_itineraries):
+        test_itinerary = test_itineraries[0]
+        test_itinerary.client_id = 42
 
-        with patch("views.email_handler.send", side_effect=Exception("Internal error")):
+        mock_client = Mock()
+        mock_client.email = "test@example.com"
+
+        with patch("views.db.get_itinerary", return_value=test_itinerary), \
+             patch("views.db.get_client", return_value=mock_client), \
+             patch(
+                 "views.email_handler.send",
+                 side_effect=Exception("Internal error"),
+             ):
+
             resp = test_app_client.post(
-                "/api/itineraries/send_email", json={"receipient": "test@kuku.com"}
+                f"/api/itineraries/{test_itinerary.id}/send_email"
             )
 
             assert resp.status_code == 500

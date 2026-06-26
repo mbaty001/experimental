@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Create Itinerary - Travel Planner{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-xl shadow-md max-w-lg mx-auto border border-gray-100 my-10">
+    <!-- Header -->
+    <div class="mb-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Create New Itinerary</h1>
+        <a href="{{ url_for('itineraries.list_itineraries_page') }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">&larr; Back to List</a>
+    </div>
+
+    <!-- Alert Notification Panel -->
+    <div id="alert-box" class="hidden mb-4 p-3 rounded text-sm font-medium"></div>
+
+    <!-- Form -->
+    <form id="add-itinerary-form" class="space-y-4">
+        <!-- Client Dropdown Selection -->
+        <div>
+            <label for="client_id" class="block text-sm font-semibold text-gray-700 mb-1">Select Client *</label>
+            <select id="client_id" name="client_id" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                <option value="" disabled selected>Loading clients list...</option>
+            </select>
+        </div>
+
+        <!-- Destination -->
+        <div>
+            <label for="destination" class="block text-sm font-semibold text-gray-700 mb-1">Destination *</label>
+            <input type="text" id="destination" name="destination" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Paris, France">
+        </div>
+
+        <!-- Dates (Grid) -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label for="start_date" class="block text-sm font-semibold text-gray-700 mb-1">Start Date *</label>
+                <input type="date" id="start_date" name="start_date" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label for="end_date" class="block text-sm font-semibold text-gray-700 mb-1">End Date *</label>
+                <input type="date" id="end_date" name="end_date" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+        </div>
+
+        <!-- Activities -->
+        <div>
+            <label for="activities" class="block text-sm font-semibold text-gray-700 mb-1">Activities / Notes</label>
+            <textarea id="activities" name="activities" rows="4"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Day 1: Eiffel Tower tour&#10;Day 2: Louvre Museum visit..."></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="pt-4 flex space-x-3">
+            <a href="{{ url_for('itineraries.list_itineraries_page') }}" 
+                class="w-1/2 text-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition font-medium">
+                Cancel
+            </a>
+            <button type="submit" id="submit-btn"
+                class="w-1/2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Save Itinerary
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Fetch clients on load to populate selection dropdown
+    document.addEventListener("DOMContentLoaded", fetchClientsDropdown);
+
+    async function fetchClientsDropdown() {
+        const selectEl = document.getElementById('client_id');
+        const alertBox = document.getElementById('alert-box');
+        
+        try {
+            // Using the client list endpoint
+            const response = await fetch("{{ url_for('clients.list_clients') }}");
+            if (!response.ok) throw new Error("Could not load clients.");
+            const clients = await response.json();
+
+            selectEl.innerHTML = ''; // Clear loading message
+
+            if (clients.length === 0) {
+                selectEl.innerHTML = '<option value="" disabled selected>No clients found</option>';
+                alertBox.innerHTML = '⚠️ You must <a href="{{ url_for("clients.add_client_page") }}" class="underline font-bold">create a client</a> before you can plan an itinerary!';
+                alertBox.className = 'block mb-4 p-3 rounded text-sm font-medium bg-yellow-100 text-yellow-800';
+                document.getElementById('submit-btn').disabled = true;
+                return;
+            }
+
+            // Populate Dropdown
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.disabled = true;
+            defaultOpt.selected = true;
+            defaultOpt.textContent = 'Choose a client...';
+            selectEl.appendChild(defaultOpt);
+
+            clients.forEach(client => {
+                const opt = document.createElement('option');
+                opt.value = client.id;
+                opt.textContent = `${client.name} (${client.email})`;
+                selectEl.appendChild(opt);
+            });
+
+        } catch (error) {
+            console.error(error);
+            selectEl.innerHTML = '<option value="" disabled selected>Error loading clients</option>';
+        }
+    }
+
+    // Submit Form
+    document.getElementById('add-itinerary-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const alertBox = document.getElementById('alert-box');
+        const submitBtn = document.getElementById('submit-btn');
+
+        const payload = {
+            client_id: parseInt(document.getElementById('client_id').value),
+            destination: document.getElementById('destination').value.trim(),
+            start_date: document.getElementById('start_date').value,
+            end_date: document.getElementById('end_date').value,
+            activities: document.getElementById('activities').value.trim() || null
+        };
+
+        // Reset elements
+        alertBox.className = 'hidden';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+
+        try {
+            const response = await fetch("{{ url_for('itineraries.create_itineraries') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.status === 201) {
+                alertBox.textContent = 'Itinerary created successfully! Redirecting...';
+                alertBox.className = 'block mb-4 p-3 rounded text-sm font-medium bg-green-100 text-green-800';
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('itineraries.list_itineraries_page') }}";
+                }, 1000);
+            } else {
+                alertBox.textContent = data.message || 'Failed to create itinerary.';
+                alertBox.className = 'block mb-4 p-3 rounded text-sm font-medium bg-red-100 text-red-800';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Itinerary';
+            }
+        } catch (error) {
+            console.error(error);
+            alertBox.textContent = 'An unexpected server error occurred.';
+            alertBox.className = 'block mb-4 p-3 rounded text-sm font-medium bg-red-100 text-red-800';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save Itinerary';
+        }
+    });
+</script>
+{% endblock %}

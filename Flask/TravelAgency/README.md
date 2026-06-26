@@ -28,17 +28,20 @@ Delete an itinerary (DELETE /api/itineraries/)
 Implement an endpoint to send itinerary details via email (POST /api/itineraries//send_email).
 
 4. Frontend Routes and Views
+
 Implement frontend routes for clients:
 List clients
 Add new client
 Edit client
 Delete client
+
 Implement frontend routes for itineraries:
 List itineraries
 Add new itinerary
 Edit itinerary
 Delete itinerary
 Ensure forms and templates are created for all CRUD operations.
+
 5. HTML Templates
 Create templates for listing, creating, and editing clients.
 Create templates for listing, creating, and editing itineraries.

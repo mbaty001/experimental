@@ -78,6 +78,7 @@ def test_itineraries_json(test_itineraries):
 @pytest.fixture()
 def test_app_client():
     app = Flask(__name__)
-    app.register_blueprint(views.bp)
+    app.register_blueprint(views.bp_clients)
+    app.register_blueprint(views.bp_itineraries)
     with app.test_client() as client:
         yield client
